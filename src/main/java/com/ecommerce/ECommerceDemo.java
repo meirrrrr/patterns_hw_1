@@ -1,17 +1,23 @@
 package com.ecommerce;
 
-import com.ecommerce.models.Product;
-import com.ecommerce.models.Cart;
-import com.ecommerce.services.PaymentService;
-import com.ecommerce.implementations.CreditCardPayment;
-import com.ecommerce.implementations.PayPalPayment;
-import com.ecommerce.models.PercentageDiscount;
-import com.ecommerce.models.FixedAmountDiscount;
-import com.ecommerce.factories.DiscountStrategyFactory;
 import com.ecommerce.interfaces.PaymentMethod;
 import com.ecommerce.interfaces.DiscountStrategy;
+
+import com.ecommerce.implementations.CreditCardPayment;
+import com.ecommerce.implementations.PayPalPayment;
+
+import com.ecommerce.models.Product;
+import com.ecommerce.models.Cart;
+import com.ecommerce.models.ProductBuilder;
+import com.ecommerce.models.PercentageDiscount;
+import com.ecommerce.models.FixedAmountDiscount;
+
+import com.ecommerce.factories.DiscountStrategyFactory;
 import com.ecommerce.factories.PercentageDiscountFactory;
 import com.ecommerce.factories.FixedDiscountFactory;
+
+import com.ecommerce.services.PaymentService;
+import com.ecommerce.utils.Logger;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -20,11 +26,29 @@ import java.util.Map;
 
 public class ECommerceDemo {
     public static void main(String[] args) {
-        System.out.println("=== E-commerce SOLID Principles Demo ===\n");
+        // instance of our logger
+        Logger logger = Logger.getInstance();
+        // out self designed logger
+        logger.log("=== E-commerce SOLID Principles Demo ===\n");
 
-        Product laptop = new Product("1", "Laptop", new BigDecimal("999.99"));
-        Product mouse = new Product("2", "Mouse", new BigDecimal("29.99"));
-        Product keyboard = new Product("3", "Keyboard", new BigDecimal("79.99"));
+        // now it's very easy to create new Product with our new ProductBuilder()
+        // cause, it's all in one format, and easy to identify how it works, and will be informative for other developers
+        // ))))
+        Product laptop = new ProductBuilder()
+                .setId("1")
+                .setName("Laptop")
+                .setPrice(new BigDecimal("999.99"))
+                .build();
+        Product mouse = new ProductBuilder()
+                .setId("2")
+                .setName("Mouse")
+                .setPrice(new BigDecimal("29.99"))
+                .build();
+        Product keyboard = new ProductBuilder()
+                .setId("3")
+                .setName("Keyboard")
+                .setPrice(new BigDecimal("79.99"))
+                .build();
 
 
         Cart cart = new Cart();
@@ -32,20 +56,20 @@ public class ECommerceDemo {
         cart.addItem(mouse);
         cart.addItem(keyboard);
 
-        System.out.println("Cart items: " + cart.getItemCount());
-        System.out.println("Original total: $" + cart.getTotalAmount());
+        logger.log("Cart items: " + cart.getItemCount());
+        logger.log("Original total: $" + cart.getTotalAmount());
 
-        System.out.println("\n=== Applying Discounts ===");
+        logger.log("\n=== Applying Discounts ===");
         DiscountStrategyFactory percentageFactory = new PercentageDiscountFactory(new BigDecimal("10"));
         DiscountStrategy percentDiscount = percentageFactory.getDiscountStrategy();
         BigDecimal discountedTotal1 = cart.applyDiscount(percentDiscount);
-        System.out.println("After " + percentDiscount.getDiscountDescription() + ": $" + discountedTotal1);
+        logger.log("After " + percentDiscount.getDiscountDescription() + ": $" + discountedTotal1);
 
         DiscountStrategyFactory fixedFactory = new FixedDiscountFactory(new BigDecimal("50"));
         DiscountStrategy fixedDiscount = fixedFactory.getDiscountStrategy();
         BigDecimal discountedTotal2 = cart.applyDiscount(fixedDiscount);
-        System.out.println("After " + fixedDiscount.getDiscountDescription() + ": $" + discountedTotal2);
-        System.out.println("\n=== Processing Payments ===");
+        logger.log("After " + fixedDiscount.getDiscountDescription() + ": $" + discountedTotal2);
+        logger.log("\n=== Processing Payments ===");
 
         PaymentMethod creditCard = new CreditCardPayment();
         PaymentService paymentService = new PaymentService(creditCard);
