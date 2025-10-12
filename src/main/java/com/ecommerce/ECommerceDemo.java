@@ -5,10 +5,13 @@ import com.ecommerce.models.Cart;
 import com.ecommerce.services.PaymentService;
 import com.ecommerce.implementations.CreditCardPayment;
 import com.ecommerce.implementations.PayPalPayment;
-import com.ecommerce.strategies.PercentageDiscount;
-import com.ecommerce.strategies.FixedAmountDiscount;
+import com.ecommerce.models.PercentageDiscount;
+import com.ecommerce.models.FixedAmountDiscount;
+import com.ecommerce.factories.DiscountStrategyFactory;
 import com.ecommerce.interfaces.PaymentMethod;
 import com.ecommerce.interfaces.DiscountStrategy;
+import com.ecommerce.factories.PercentageDiscountFactory;
+import com.ecommerce.factories.FixedDiscountFactory;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -33,11 +36,13 @@ public class ECommerceDemo {
         System.out.println("Original total: $" + cart.getTotalAmount());
 
         System.out.println("\n=== Applying Discounts ===");
-        DiscountStrategy percentDiscount = new PercentageDiscount(new BigDecimal("10"));
+        DiscountStrategyFactory percentageFactory = new PercentageDiscountFactory(new BigDecimal("10"));
+        DiscountStrategy percentDiscount = percentageFactory.getDiscountStrategy();
         BigDecimal discountedTotal1 = cart.applyDiscount(percentDiscount);
         System.out.println("After " + percentDiscount.getDiscountDescription() + ": $" + discountedTotal1);
 
-        DiscountStrategy fixedDiscount = new FixedAmountDiscount(new BigDecimal("50"));
+        DiscountStrategyFactory fixedFactory = new FixedDiscountFactory(new BigDecimal("50"));
+        DiscountStrategy fixedDiscount = fixedFactory.getDiscountStrategy();
         BigDecimal discountedTotal2 = cart.applyDiscount(fixedDiscount);
         System.out.println("After " + fixedDiscount.getDiscountDescription() + ": $" + discountedTotal2);
         System.out.println("\n=== Processing Payments ===");

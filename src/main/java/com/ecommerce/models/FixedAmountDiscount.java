@@ -1,4 +1,4 @@
-package com.ecommerce.strategies;
+package com.ecommerce.models;
 
 import com.ecommerce.interfaces.DiscountStrategy;
 import java.math.BigDecimal;
@@ -23,6 +23,6 @@ public class FixedAmountDiscount implements DiscountStrategy {
 
     @Override
     public String getDiscountDescription() {
-        return "$" + discountAmount + " off";
+        return "Discount: " + discountAmount + " (Fixed Amount)";
     }
 }
